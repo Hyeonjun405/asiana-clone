@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>출도착 조회 | Asiana Clone</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link th:href="@{/css/style.css}" rel="stylesheet">
+</head>
+<body>
+<nav class="navbar navbar-expand-lg navbar-light bg-light shadow-sm">
+    <div class="container">
+        <a class="navbar-brand fw-bold" th:href="@{/}">ASIANA CLONE</a>
+        <div class="collapse navbar-collapse justify-content-end">
+            <ul class="navbar-nav">
+                <li class="nav-item"><a class="nav-link" th:href="@{/login}">로그인</a></li>
+                <li class="nav-item"><a class="nav-link" th:href="@{/booking}">항공권 예약</a></li>
+                <li class="nav-item"><a class="nav-link" th:href="@{/reservation}">예약 확인</a></li>
+                <li class="nav-item"><a class="nav-link active" th:href="@{/flight-search}">출도착 조회</a></li>
+                <li class="nav-item"><a class="nav-link" th:href="@{/event}">이벤트</a></li>
+            </ul>
+        </div>
+    </div>
+</nav>
+
+<section class="container py-5">
+    <h2 class="fw-bold mb-4 text-center">출도착 조회</h2>
+
+    <!-- 조회 폼 -->
+    <form class="border p-4 rounded shadow-sm col-md-6 mx-auto" th:action="@{/flight-search/search}" method="get">
+        <div class="row mb-3">
+            <div class="col-md-4">
+                <label class="form-label">출발지</label>
+                <input type="text" name="from" class="form-control" placeholder="예: 서울" th:value="${from}">
+            </div>
+            <div class="col-md-4">
+                <label class="form-label">도착지</label>
+                <input type="text" name="to" class="form-control" placeholder="예: 도쿄" th:value="${to}">
+            </div>
+            <div class="col-md-4">
+                <label class="form-label">탑승일</label>
+                <input type="date" name="departureDate" class="form-control" th:value="${departureDate}">
+            </div>
+        </div>
+
+        <button class="btn btn-primary w-100 mt-3">조회</button>
+    </form>
+
+    <!-- 조회 결과 -->
+    <div class="mt-5" th:if="${flights != null and #lists.isEmpty(flights) == false}">
+        <h4 class="fw-bold mb-3">조회 결과</h4>
+        <div class="table-responsive">
+            <table class="table table-striped">
+                <thead>
+                <tr>
+                    <th>항공편</th>
+                    <th>출발</th>
+                    <th>도착</th>
+                    <th>출발 시간</th>
+                    <th>도착 시간</th>
+                    <th>상태</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="f : ${flights}">
+                    <td th:text="${f.flightNumber}">OZ101</td>
+                    <td th:text="${f.from}">서울</td>
+                    <td th:text="${f.to}">도쿄</td>
+                    <td th:text="${f.departureTime}">08:00</td>
+                    <td th:text="${f.arrivalTime}">10:30</td>
+                    <td th:text="${f.status}">운항</td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- 결과 없을 때 -->
+    <div th:if="${flights != null and #lists.isEmpty(flights)}" class="alert alert-warning mt-3">
+        해당 조건의 항공편이 없습니다.
+    </div>
+</section>
+
+<footer class="bg-dark text-white text-center py-3">
+    <p>© 2025 Asiana Airlines Clone | For Learning Purpose</p>
+</footer>
+</body>
+</html>

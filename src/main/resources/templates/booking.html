@@ -5,6 +5,21 @@
     <title>항공권 예약 | Asiana Clone</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <link th:href="@{/css/style.css}" rel="stylesheet">
+    <script>
+        function toggleTripType(type) {
+            document.getElementById("tripType").value = type;
+            const returnDateGroup = document.getElementById("returnDateGroup");
+            if (type === 'ROUND') {
+                returnDateGroup.style.display = 'block';
+                document.getElementById("roundTab").classList.add("active");
+                document.getElementById("onewayTab").classList.remove("active");
+            } else {
+                returnDateGroup.style.display = 'none';
+                document.getElementById("roundTab").classList.remove("active");
+                document.getElementById("onewayTab").classList.add("active");
+            }
+        }
+    </script>
 </head>
 <body>
 <nav class="navbar navbar-expand-lg navbar-light bg-light shadow-sm">
@@ -12,9 +27,10 @@
         <a class="navbar-brand fw-bold" th:href="@{/}">ASIANA CLONE</a>
         <div class="collapse navbar-collapse justify-content-end">
             <ul class="navbar-nav">
+                <li class="nav-item"><a class="nav-link" th:href="@{/login}">로그인</a></li>
                 <li class="nav-item"><a class="nav-link active" th:href="@{/booking}">항공권 예약</a></li>
                 <li class="nav-item"><a class="nav-link" th:href="@{/reservation}">예약 확인</a></li>
-                <li class="nav-item"><a class="nav-link" th:href="@{/flight-status}">항공편 조회</a></li>
+                <li class="nav-item"><a class="nav-link" th:href="@{/flight-search}">출도착 조회</a></li>
                 <li class="nav-item"><a class="nav-link" th:href="@{/event}">이벤트</a></li>
             </ul>
         </div>
@@ -24,30 +40,172 @@
 <section class="container py-5">
     <h2 class="fw-bold mb-4 text-center">항공권 예약</h2>
 
-    <form class="row g-3 justify-content-center" th:action="@{/api/booking/search}" th:method="get">
-        <div class="col-md-3">
-            <label class="form-label">출발지</label>
-            <input type="text" class="form-control" name="from" placeholder="예: 서울">
+    <!-- 왕복/편도 탭 -->
+    <div class="d-flex justify-content-center mb-4">
+        <div class="btn-group" role="group">
+            <button id="roundTab" type="button" class="btn btn-outline-primary active" onclick="toggleTripType('ROUND')">왕복</button>
+            <button id="onewayTab" type="button" class="btn btn-outline-primary" onclick="toggleTripType('ONEWAY')">편도</button>
         </div>
-        <div class="col-md-3">
-            <label class="form-label">도착지</label>
-            <input type="text" class="form-control" name="to" placeholder="예: 도쿄">
+    </div>
+
+    <!-- 예약 폼 -->
+    <form class="border p-4 rounded shadow-sm col-md-8 mx-auto" th:action="@{/booking/search}" method="get">
+        <input type="hidden" name="tripType" id="tripType" value="ROUND">
+
+        <!-- 출발/도착 -->
+        <div class="row mb-3">
+            <div class="col-md-6">
+                <label class="form-label">출발지</label>
+                <input type="text" name="from" class="form-control" placeholder="예: 서울" th:value="${from}">
+            </div>
+            <div class="col-md-6">
+                <label class="form-label">도착지</label>
+                <input type="text" name="to" class="form-control" placeholder="예: 도쿄" th:value="${to}">
+            </div>
         </div>
-        <div class="col-md-2">
-            <label class="form-label">출발일</label>
-            <input type="date" class="form-control" name="departureDate">
+
+        <!-- 탑승일/귀국일 -->
+        <div class="row mb-3">
+            <div class="col-md-6">
+                <label class="form-label">탑승일</label>
+                <input type="date" name="departureDate" class="form-control" th:value="${departureDate}">
+            </div>
+            <div class="col-md-6" id="returnDateGroup">
+                <label class="form-label">귀국일</label>
+                <input type="date" name="returnDate" class="form-control" th:value="${returnDate}">
+            </div>
         </div>
-        <div class="col-md-2">
-            <label class="form-label">도착일</label>
-            <input type="date" class="form-control" name="returnDate">
+
+        <!-- 탑승객 입력 -->
+        <div class="row mb-3">
+            <div class="col-md-4">
+                <label class="form-label">성인</label>
+                <input type="number" name="adult" class="form-control" min="0" th:value="${adult != null ? adult : 1}">
+            </div>
+            <div class="col-md-4">
+                <label class="form-label">소아</label>
+                <input type="number" name="child" class="form-control" min="0" th:value="${child != null ? child : 0}">
+            </div>
+            <div class="col-md-4">
+                <label class="form-label">유아</label>
+                <input type="number" name="infant" class="form-control" min="0" th:value="${infant != null ? infant : 0}">
+            </div>
         </div>
-        <div class="col-md-2 align-self-end">
-            <button class="btn btn-primary w-100">검색</button>
+
+        <!-- 좌석 등급 (다중 선택) -->
+        <div class="row mb-3">
+            <label class="form-label col-12">좌석 등급</label>
+
+            <div class="col-md-3">
+                <div class="form-check">
+                    <input class="form-check-input" type="checkbox" id="seatEconomyDiscount" name="seatClass" value="ECONOMY_DISCOUNT"
+                           th:checked="${seatClassList != null and seatClassList.contains('ECONOMY_DISCOUNT')}">
+                    <label class="form-check-label" for="seatEconomyDiscount">이코노미 특가</label>
+                </div>
+            </div>
+
+            <div class="col-md-3">
+                <div class="form-check">
+                    <input class="form-check-input" type="checkbox" id="seatEconomy" name="seatClass" value="ECONOMY"
+                           th:checked="${seatClassList != null and seatClassList.contains('ECONOMY')}">
+                    <label class="form-check-label" for="seatEconomy">이코노미</label>
+                </div>
+            </div>
+
+            <div class="col-md-3">
+                <div class="form-check">
+                    <input class="form-check-input" type="checkbox" id="seatBusiness" name="seatClass" value="BUSINESS"
+                           th:checked="${seatClassList != null and seatClassList.contains('BUSINESS')}">
+                    <label class="form-check-label" for="seatBusiness">비즈니스</label>
+                </div>
+            </div>
+
+            <div class="col-md-3">
+                <div class="form-check">
+                    <input class="form-check-input" type="checkbox" id="seatFirst" name="seatClass" value="FIRST"
+                           th:checked="${seatClassList != null and seatClassList.contains('FIRST')}">
+                    <label class="form-check-label" for="seatFirst">퍼스트</label>
+                </div>
+            </div>
         </div>
+
+        <button class="btn btn-primary w-100 mt-3">항공편 조회</button>
     </form>
 
-    <div class="mt-5 text-center text-muted">
-        <p>검색 결과는 API 연동 시 표시됩니다.</p>
+    <div class="mt-5">
+        <!-- 출국편 -->
+        <div th:if="${outboundFlights != null}">
+            <h4 class="fw-bold mb-3" th:if="${#lists.isEmpty(outboundFlights) == false}">출국편</h4>
+
+            <div class="table-responsive mb-5" th:if="${#lists.isEmpty(outboundFlights) == false}">
+                <table class="table table-striped">
+                    <thead>
+                    <tr>
+                        <th>항공편</th>
+                        <th>출발</th>
+                        <th>도착</th>
+                        <th>출발 시간</th>
+                        <th>도착 시간</th>
+                        <th>운임</th>
+                        <th></th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr th:each="f : ${outboundFlights}">
+                        <td th:text="${f.flightNumber}">OZ101</td>
+                        <td th:text="${f.from}">서울</td>
+                        <td th:text="${f.to}">도쿄</td>
+                        <td th:text="${f.departureTime}">08:00</td>
+                        <td th:text="${f.arrivalTime}">10:30</td>
+                        <td th:text="${f.price}">₩150,000</td>
+                        <td><button class="btn btn-outline-primary btn-sm">선택</button></td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- 조회 후 리스트 없을 때 -->
+            <div th:if="${#lists.isEmpty(outboundFlights)}" class="alert alert-warning">
+                출국편 항공편이 없습니다.
+            </div>
+        </div>
+
+        <!-- 귀국편 (왕복일 경우만) -->
+        <div th:if="${tripType == 'ROUND' and returnFlights != null}">
+            <h4 class="fw-bold mb-3" th:if="${#lists.isEmpty(returnFlights) == false}">귀국편</h4>
+
+            <div class="table-responsive mb-5" th:if="${#lists.isEmpty(returnFlights) == false}">
+                <table class="table table-striped">
+                    <thead>
+                    <tr>
+                        <th>항공편</th>
+                        <th>출발</th>
+                        <th>도착</th>
+                        <th>출발 시간</th>
+                        <th>도착 시간</th>
+                        <th>운임</th>
+                        <th></th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr th:each="f : ${returnFlights}">
+                        <td th:text="${f.flightNumber}">OZ102</td>
+                        <td th:text="${f.from}">도쿄</td>
+                        <td th:text="${f.to}">서울</td>
+                        <td th:text="${f.departureTime}">19:00</td>
+                        <td th:text="${f.arrivalTime}">21:30</td>
+                        <td th:text="${f.price}">₩150,000</td>
+                        <td><button class="btn btn-outline-primary btn-sm">선택</button></td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- 조회 후 리스트 없을 때 -->
+            <div th:if="${#lists.isEmpty(returnFlights)}" class="alert alert-warning">
+                귀국편 항공편이 없습니다.
+            </div>
+        </div>
     </div>
 </section>
 
@@ -55,4 +213,6 @@
     <p>© 2025 Asiana Airlines Clone | For Learning Purpose</p>
 </footer>
 </body>
+
+
 </html>

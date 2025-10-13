@@ -2,7 +2,7 @@
 <html lang="ko" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>예약 확인 | Asiana Clone</title>
+    <title>예약 내역 | Asiana Clone</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <link th:href="@{/css/style.css}" rel="stylesheet">
 </head>
@@ -23,20 +23,41 @@
 </nav>
 
 <section class="container py-5">
-    <h2 class="fw-bold mb-4 text-center">예약 확인</h2>
+    <h2 class="fw-bold mb-4 text-center">예약 내역</h2>
 
-    <!-- 예약 조회 폼 -->
-    <form class="col-md-6 mx-auto border p-4 rounded shadow-sm" th:action="@{/reservation/check}" th:method="get">
-        <div class="mb-3">
-            <label class="form-label">예약번호</label>
-            <input type="text" class="form-control" name="reservationNumber" placeholder="예: A1234567">
+    <!-- 예약 결과 영역 -->
+    <div class="mt-5">
+        <!-- 결과 없을 때 -->
+        <div th:if="${#lists.isEmpty(reservations)}" class="text-center text-muted">
+            예약 내역이 없습니다.
         </div>
-        <div class="mb-3">
-            <label class="form-label">이메일 주소</label>
-            <input type="email" class="form-control" name="email" placeholder="예: example@email.com">
+
+        <!-- 결과 있을 때 -->
+        <div th:if="${!#lists.isEmpty(reservations)}" class="table-responsive">
+            <table class="table table-striped">
+                <thead>
+                <tr>
+                    <th>예약번호</th>
+                    <th>항공편</th>
+                    <th>출발</th>
+                    <th>도착</th>
+                    <th>출발일</th>
+                    <th>가격</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="res : ${reservations}">
+                    <td th:text="${res.reservationNumber}">A1234567</td>
+                    <td th:text="${res.flightNumber}">OZ101</td>
+                    <td th:text="${res.from}">서울</td>
+                    <td th:text="${res.to}">도쿄</td>
+                    <td th:text="${res.date}">2025-10-12</td>
+                    <td th:text="${res.price}">250000</td>
+                </tr>
+                </tbody>
+            </table>
         </div>
-        <button class="btn btn-primary w-100">조회</button>
-    </form>
+    </div>
 </section>
 
 <footer class="bg-dark text-white text-center py-3">
