@@ -1,0 +1,23 @@
+<!-- fragments/header.html -->
+<header th:fragment="header">
+    <nav class="navbar navbar-expand-lg navbar-light bg-light shadow-sm">
+        <div class="container">
+            <a class="navbar-brand fw-bold" th:href="@{/}">ASIANA CLONE</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
+                    data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false"
+                    aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+
+            <div class="collapse navbar-collapse justify-content-end" id="navbarNav">
+                <ul class="navbar-nav">
+                    <li class="nav-item"><a class="nav-link" th:href="@{/login}">로그인</a></li>
+                    <li class="nav-item"><a class="nav-link" th:href="@{/booking}">항공권 예약</a></li>
+                    <li class="nav-item"><a class="nav-link" th:href="@{/reservation}">예약 확인</a></li>
+                    <li class="nav-item"><a class="nav-link" th:href="@{/flight-search}">출도착 조회</a></li>
+                    <li class="nav-item"><a class="nav-link" th:href="@{/event}">이벤트</a></li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+</header>
