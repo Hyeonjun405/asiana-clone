@@ -13,15 +13,21 @@
     <h2 class="fw-bold mb-4 text-center">출도착 조회</h2>
 
     <!-- 조회 폼 -->
-    <form class="border p-4 rounded shadow-sm col-md-6 mx-auto" th:action="@{/flight-search/search}" method="get">
+    <form class="border p-4 rounded shadow-sm col-md-6 mx-auto" th:action="@{/flight-search/search}" method="post">
         <div class="row mb-3">
             <div class="col-md-4">
                 <label class="form-label">출발지</label>
-                <input type="text" name="from" class="form-control" placeholder="예: 서울" th:value="${from}">
+                <select name="from" class="form-control" th:value="${from}">
+                    <option value="">선택</option>
+                    <option th:each="a : ${departure}" th:value="${a}" th:text="${a}" th:selected="${a == from}"></option>
+                </select>
             </div>
             <div class="col-md-4">
                 <label class="form-label">도착지</label>
-                <input type="text" name="to" class="form-control" placeholder="예: 도쿄" th:value="${to}">
+                <select name="to" class="form-control" th:value="${to}">
+                    <option value="">선택</option>
+                    <option th:each="a : ${arrival}" th:value="${a}" th:text="${a}" th:selected="${a == to}"></option>
+                </select>
             </div>
             <div class="col-md-4">
                 <label class="form-label">탑승일</label>
