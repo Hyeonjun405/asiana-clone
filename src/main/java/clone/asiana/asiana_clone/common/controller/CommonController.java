@@ -1,4 +1,4 @@
-package clone.asiana.asiana_clone.controller;
+package clone.asiana.asiana_clone.common.controller;
 
 
 import org.springframework.stereotype.Controller;
@@ -20,11 +20,6 @@ public class CommonController {
     @GetMapping("/reservation")
     public String reservation() {
         return "reservation";
-    }
-
-    @GetMapping("/flight-search")
-    public String flightStatus() {
-        return "flight-search";
     }
 
     @GetMapping("/event")
