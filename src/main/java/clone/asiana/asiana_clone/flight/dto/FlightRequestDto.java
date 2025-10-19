@@ -5,24 +5,24 @@ import java.time.LocalDate;
 public class FlightRequestDto {
 
 
-    private String from;
-    private String to;
+    private String departureAirport;
+    private String arrivalAirport;
     private LocalDate departureDate;
 
-    public String getFrom() {
-        return from;
+    public String getDepartureAirport() {
+        return departureAirport;
     }
 
-    public void setFrom(String from) {
-        this.from = from;
+    public void setDepartureAirport(String departureAirport) {
+        this.departureAirport = departureAirport;
     }
 
-    public String getTo() {
-        return to;
+    public String getArrivalAirport() {
+        return arrivalAirport;
     }
 
-    public void setTo(String to) {
-        this.to = to;
+    public void setArrivalAirport(String arrivalAirport) {
+        this.arrivalAirport = arrivalAirport;
     }
 
     public LocalDate getDepartureDate() {
@@ -31,14 +31,5 @@ public class FlightRequestDto {
 
     public void setDepartureDate(LocalDate departureDate) {
         this.departureDate = departureDate;
-    }
-
-    @Override
-    public String toString() {
-        return "FlightRequestDto{" +
-                "from='" + from + '\'' +
-                ", to='" + to + '\'' +
-                ", departureDate=" + departureDate +
-                '}';
     }
 }

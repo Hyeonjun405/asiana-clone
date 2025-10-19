@@ -3,16 +3,16 @@ package clone.asiana.asiana_clone.flight.vo;
 public class FlightStatus {
 
     private String flightNumber;
-    private String from;
-    private String to;
+    private String departureAirport;
+    private String arrivalAirport;
     private String departureTime;
     private String arrivalTime;
     private String status;
 
-    public FlightStatus(String flightNumber, String from, String to, String departureTime, String arrivalTime, String status) {
+    public FlightStatus(String flightNumber, String departureAirport, String arrivalAirport, String departureTime, String arrivalTime, String status) {
         this.flightNumber = flightNumber;
-        this.from = from;
-        this.to = to;
+        this.departureAirport = departureAirport;
+        this.arrivalAirport = arrivalAirport;
         this.departureTime = departureTime;
         this.arrivalTime = arrivalTime;
         this.status = status;
@@ -26,20 +26,20 @@ public class FlightStatus {
         this.flightNumber = flightNumber;
     }
 
-    public String getFrom() {
-        return from;
+    public String getDepartureAirport() {
+        return departureAirport;
     }
 
-    public void setFrom(String from) {
-        this.from = from;
+    public void setDepartureAirport(String departureAirport) {
+        this.departureAirport = departureAirport;
     }
 
-    public String getTo() {
-        return to;
+    public String getArrivalAirport() {
+        return arrivalAirport;
     }
 
-    public void setTo(String to) {
-        this.to = to;
+    public void setArrivalAirport(String arrivalAirport) {
+        this.arrivalAirport = arrivalAirport;
     }
 
     public String getDepartureTime() {

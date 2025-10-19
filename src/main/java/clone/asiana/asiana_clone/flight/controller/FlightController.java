@@ -2,6 +2,7 @@ package clone.asiana.asiana_clone.flight.controller;
 
 import clone.asiana.asiana_clone.flight.dto.FlightRequestDto;
 import clone.asiana.asiana_clone.flight.service.FlightService;
+import clone.asiana.asiana_clone.flight.vo.FindFlight;
 import clone.asiana.asiana_clone.flight.vo.FlightStatus;
 import lombok.extern.slf4j.Slf4j;
 
@@ -38,14 +39,18 @@ public class FlightController {
     @PostMapping("/search")
     public String searchFlights(FlightRequestDto requestDto, Model model) {
 
-        List<FlightStatus> flights = flightService.findFlights(requestDto.getFrom(), requestDto.getTo(), requestDto.getDepartureDate());
+        FindFlight findFlight = new FindFlight(requestDto.getDepartureAirport(), requestDto.getArrivalAirport(), null);
+
+        List<FlightStatus> flights = flightService.findFlights(findFlight);
+
+        log.info("사이즈 : " + flights.size());
 
         if(flights == null) flights = new ArrayList<>();
 
         model.addAttribute("flights", flights);
 
-        model.addAttribute("from", requestDto.getFrom());
-        model.addAttribute("to", requestDto.getTo());
+        model.addAttribute("departureAirport", requestDto.getDepartureAirport());
+        model.addAttribute("arrivalAirport", requestDto.getArrivalAirport());
         model.addAttribute("departureDate", requestDto.getDepartureDate());
 
         model.addAttribute("departure", flightService.findAllArrivalAirports());
