@@ -17,16 +17,16 @@
         <div class="row mb-3">
             <div class="col-md-4">
                 <label class="form-label">출발지</label>
-                <select name="from" class="form-control" th:value="${from}">
+                <select name="departureAirport" class="form-control" th:value="${departureAirport}">
                     <option value="">선택</option>
-                    <option th:each="a : ${departure}" th:value="${a}" th:text="${a}" th:selected="${a == from}"></option>
+                    <option th:each="a : ${departure}" th:value="${a}" th:text="${a}" th:selected="${a == departureAirport}"></option>
                 </select>
             </div>
             <div class="col-md-4">
                 <label class="form-label">도착지</label>
-                <select name="to" class="form-control" th:value="${to}">
+                <select name="arrivalAirport" class="form-control" th:value="${arrivalAirport}">
                     <option value="">선택</option>
-                    <option th:each="a : ${arrival}" th:value="${a}" th:text="${a}" th:selected="${a == to}"></option>
+                    <option th:each="a : ${arrival}" th:value="${a}" th:text="${a}" th:selected="${a == arrivalAirport}"></option>
                 </select>
             </div>
             <div class="col-md-4">
@@ -56,8 +56,8 @@
                 <tbody>
                 <tr th:each="f : ${flights}">
                     <td th:text="${f.flightNumber}">OZ101</td>
-                    <td th:text="${f.from}">서울</td>
-                    <td th:text="${f.to}">도쿄</td>
+                    <td th:text="${f.departureAirport}">서울</td>
+                    <td th:text="${f.arrivalAirport}">도쿄</td>
                     <td th:text="${f.departureTime}">08:00</td>
                     <td th:text="${f.arrivalTime}">10:30</td>
                     <td th:text="${f.status}">운항</td>

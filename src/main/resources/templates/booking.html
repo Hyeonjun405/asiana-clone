@@ -43,11 +43,11 @@
         <div class="row mb-3">
             <div class="col-md-6">
                 <label class="form-label">출발지</label>
-                <input type="text" name="from" class="form-control" placeholder="예: 서울" th:value="${from}">
+                <input type="text" name="departureAirport" class="form-control" placeholder="예: 서울" th:value="${departureAirport}">
             </div>
             <div class="col-md-6">
                 <label class="form-label">도착지</label>
-                <input type="text" name="to" class="form-control" placeholder="예: 도쿄" th:value="${to}">
+                <input type="text" name="arrivalAirport" class="form-control" placeholder="예: 도쿄" th:value="${arrivalAirport}">
             </div>
         </div>
 
@@ -140,8 +140,8 @@
                     <tbody>
                     <tr th:each="f : ${outboundFlights}">
                         <td th:text="${f.flightNumber}">OZ101</td>
-                        <td th:text="${f.from}">서울</td>
-                        <td th:text="${f.to}">도쿄</td>
+                        <td th:text="${f.departureAirport}">서울</td>
+                        <td th:text="${f.arrivalAirport}">도쿄</td>
                         <td th:text="${f.departureTime}">08:00</td>
                         <td th:text="${f.arrivalTime}">10:30</td>
                         <td th:text="${f.price}">₩150,000</td>
@@ -151,13 +151,12 @@
                 </table>
             </div>
 
-            <!-- 조회 후 리스트 없을 때 -->
             <div th:if="${#lists.isEmpty(outboundFlights)}" class="alert alert-warning">
                 출국편 항공편이 없습니다.
             </div>
         </div>
 
-        <!-- 귀국편 (왕복일 경우만) -->
+        <!-- 귀국편 -->
         <div th:if="${tripType == 'ROUND' and returnFlights != null}">
             <h4 class="fw-bold mb-3" th:if="${#lists.isEmpty(returnFlights) == false}">귀국편</h4>
 
@@ -177,8 +176,8 @@
                     <tbody>
                     <tr th:each="f : ${returnFlights}">
                         <td th:text="${f.flightNumber}">OZ102</td>
-                        <td th:text="${f.from}">도쿄</td>
-                        <td th:text="${f.to}">서울</td>
+                        <td th:text="${f.departureAirport}">도쿄</td>
+                        <td th:text="${f.arrivalAirport}">서울</td>
                         <td th:text="${f.departureTime}">19:00</td>
                         <td th:text="${f.arrivalTime}">21:30</td>
                         <td th:text="${f.price}">₩150,000</td>
@@ -188,7 +187,6 @@
                 </table>
             </div>
 
-            <!-- 조회 후 리스트 없을 때 -->
             <div th:if="${#lists.isEmpty(returnFlights)}" class="alert alert-warning">
                 귀국편 항공편이 없습니다.
             </div>
@@ -198,6 +196,4 @@
 
 <div th:replace="~{fragments/footer :: footer}"></div>
 </body>
-
-
 </html>
