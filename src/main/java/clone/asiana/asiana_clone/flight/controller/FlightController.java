@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -37,13 +38,11 @@ public class FlightController {
     }
 
     @PostMapping("/search")
-    public String searchFlights(FlightRequestDto requestDto, Model model) {
+    public String searchFlights(@ModelAttribute FlightRequestDto requestDto, Model model) {
 
         FindFlight findFlight = new FindFlight(requestDto.getDepartureAirport(), requestDto.getArrivalAirport(), null);
 
         List<FlightStatus> flights = flightService.findFlights(findFlight);
-
-        log.info("사이즈 : " + flights.size());
 
         if(flights == null) flights = new ArrayList<>();
 
