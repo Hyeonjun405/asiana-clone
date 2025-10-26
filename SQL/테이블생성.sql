@@ -1,50 +1,65 @@
---  Flights (비행기 노선 정보)
-CREATE TABLE flights.Flights (
-    flight_id BIGSERIAL PRIMARY KEY,          -- 항공편 ID
-    flight_number VARCHAR(20) NOT NULL,       -- 항공편 번호
-    "from" VARCHAR(50) NOT NULL,             -- 출발지
-    "to" VARCHAR(50) NOT NULL,               -- 도착지
-    departure_time TIMESTAMP NOT NULL,       -- 출발 시간
-    arrival_time TIMESTAMP NOT NULL          -- 도착 시간
+-- aircrafts (항공기 종류 + 좌석 구성 포함)
+CREATE TABLE flights.aircrafts (
+    aircraft_id BIGSERIAL PRIMARY KEY,   -- 항공기 ID
+    aircraft_code VARCHAR(20) UNIQUE,    -- 항공기 코드 (예: A321)
+    model_name VARCHAR(50) NOT NULL,     -- 모델명
+    manufacturer VARCHAR(50),            -- 제조사
+    economy_seats INT NOT NULL,          -- 이코노미 좌석 수
+    business_seats INT DEFAULT 0,        -- 비즈니스 좌석 수
+    first_seats INT DEFAULT 0,           -- 퍼스트 클래스 좌석 수
+    total_capacity INT GENERATED ALWAYS AS
+        (economy_seats + business_seats + first_seats) STORED
 );
 
--- Airplane_Seats (항공편별 좌석 정보)
-CREATE TABLE flights.Airplane_Seats (
-    seat_id BIGSERIAL PRIMARY KEY,           -- 좌석 정보 ID
-    flight_id BIGINT NOT NULL,               -- 항공편 ID
-    class_type VARCHAR(20) NOT NULL,         -- 좌석 등급 (이코노미, 비즈니스 등)
-    total_seats INT NOT NULL,                -- 총 좌석 수
-    CONSTRAINT fk_flight FOREIGN KEY(flight_id) REFERENCES flights.Flights(flight_id)
+
+-- flights (비행기 노선 정보)
+CREATE TABLE flights.flights (
+    flight_id BIGSERIAL PRIMARY KEY,
+    flight_number VARCHAR(20) NOT NULL,
+    aircraft_id BIGINT NOT NULL,
+    departure_airport VARCHAR(50) NOT NULL,
+    arrival_airport VARCHAR(50) NOT NULL,
+    departure_time TIMESTAMP NOT NULL,
+    arrival_time TIMESTAMP NOT NULL,
+    CONSTRAINT fk_flight_aircraft FOREIGN KEY (aircraft_id)
+        REFERENCES flights.aircrafts (aircraft_id)
+        ON DELETE RESTRICT
 );
 
--- Flight_Status (항공편별 운행 상태)
-CREATE TABLE flights.Flight_Status (
-    flight_id BIGINT PRIMARY KEY,            -- 항공편 ID
-    status VARCHAR(20) NOT NULL,             -- 비행 상태 (scheduled, delayed, cancelled 등)
-    delay_time INT DEFAULT 0,                -- 지연 시간 (분)
+
+-- flight_status (항공편 운항 상태)
+CREATE TABLE flights.flight_status (
+    flight_id BIGINT PRIMARY KEY,             -- 항공편 ID
+    status VARCHAR(20) NOT NULL,              -- 운항 상태 (scheduled, delayed, cancelled 등)
+    delay_time INT DEFAULT 0,                 -- 지연 시간 (분)
     last_updated TIMESTAMP DEFAULT CURRENT_TIMESTAMP, -- 최종 업데이트 시간
-    CONSTRAINT fk_flight_status FOREIGN KEY(flight_id) REFERENCES flights.Flights(flight_id)
+    CONSTRAINT fk_status_flight FOREIGN KEY (flight_id)
+        REFERENCES flights.flights (flight_id)
+        ON DELETE CASCADE
 );
 
--- Users (유저 테이블)
-CREATE TABLE flights.Users (
-    user_id BIGSERIAL PRIMARY KEY,           -- 유저 ID
-    username VARCHAR(50) NOT NULL,           -- 사용자 이름/아이디
-    password VARCHAR(255) NOT NULL,          -- 비밀번호
+-- users (유저 테이블)
+CREATE TABLE flights.users (
+    user_id BIGSERIAL PRIMARY KEY,            -- 유저 ID
+    username VARCHAR(50) NOT NULL,            -- 사용자 이름/아이디
+    password VARCHAR(255) NOT NULL,           -- 비밀번호
     email VARCHAR(100),                       -- 이메일
     phone VARCHAR(20)                         -- 전화번호
 );
 
-
--- Reservations (항공편별 예약 정보)
-CREATE TABLE flights.Reservations (
-    reservation_id BIGSERIAL PRIMARY KEY,    -- 예약 ID
-    flight_id BIGINT NOT NULL,               -- 항공편 ID
-    user_id BIGINT NOT NULL,                 -- 유저 ID
-    seat_class VARCHAR(20) NOT NULL,         -- 좌석 등급
-    passenger_name VARCHAR(50) NOT NULL,     -- 승객 이름
-    passenger_type VARCHAR(10) NOT NULL,     -- 승객 유형 (성인/소아/유아)
-    status VARCHAR(20) NOT NULL,             -- 예약 상태 (예약완료/취소 등)
-    CONSTRAINT fk_flight_res FOREIGN KEY(flight_id) REFERENCES flights.Flights(flight_id),
-    CONSTRAINT fk_user_res FOREIGN KEY(user_id) REFERENCES flights.Users(user_id)
+-- reservations (항공편별 예약 정보)
+CREATE TABLE flights.reservations (
+    reservation_id BIGSERIAL PRIMARY KEY,     -- 예약 ID
+    flight_id BIGINT NOT NULL,                -- 항공편 ID
+    user_id BIGINT NOT NULL,                  -- 유저 ID
+    seat_class VARCHAR(20) NOT NULL,          -- 좌석 등급
+    passenger_name VARCHAR(50) NOT NULL,      -- 승객 이름
+    passenger_type VARCHAR(10) NOT NULL,      -- 승객 유형 (성인/소아/유아)
+    status VARCHAR(20) NOT NULL,              -- 예약 상태 (예약완료/취소 등)
+    CONSTRAINT fk_res_flight FOREIGN KEY (flight_id)
+        REFERENCES flights.flights (flight_id)
+        ON DELETE CASCADE,
+    CONSTRAINT fk_res_user FOREIGN KEY (user_id)
+        REFERENCES flights.users (user_id)
+        ON DELETE CASCADE
 );
