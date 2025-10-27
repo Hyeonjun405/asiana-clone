@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "//mybatis.org/DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
-<mapper namespace="FlightStatusMapper">
+<mapper namespace="clone.asiana.asiana_clone.flight.mapper.FlightMapper">
 
-    <select id="flights_departureAirport" resultType="String">
+    <select id="departureAirport" resultType="string">
         select
         departure_airport as departureAirport
         from flights.flights
@@ -10,7 +10,7 @@
         group by departure_airport
     </select>
 
-    <select id="flights_arrivalAirport" resultType="String">
+    <select id="arrivalAirport" resultType="string">
         select
         arrival_airport as arrivalAirport
         from flights.flights
@@ -18,7 +18,7 @@
         group by arrival_airport
     </select>
 
-    <select id="flights_search" resultType="FlightStatus">
+    <select id="flightsSearch" resultType="clone.asiana.asiana_clone.flight.vo.FlightStatus">
         select
             a.flight_number,
             a.departure_airport as departureAirport,

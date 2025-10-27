@@ -1,6 +1,7 @@
 package clone.asiana.asiana_clone.flight.service;
 
 
+import clone.asiana.asiana_clone.flight.mapper.FlightMapper;
 import clone.asiana.asiana_clone.flight.vo.FindFlight;
 import clone.asiana.asiana_clone.flight.vo.FlightStatus;
 import org.mybatis.spring.SqlSessionTemplate;
@@ -15,20 +16,20 @@ import java.util.List;
 public class FlightService {
 
     @Autowired
-    private SqlSessionTemplate sqlSession;
-
+    private FlightMapper flightMapper;
 
     public List<String> findAllDepartureAirports(){
 
-        return sqlSession.selectList("FlightStatusMapper.flights_departureAirport");
+        return flightMapper.departureAirport();
     };
 
     public List<String> findAllArrivalAirports(){
-        return sqlSession.selectList("FlightStatusMapper.flights_arrivalAirport");
+
+        return flightMapper.arrivalAirport();
     };
 
     public List<FlightStatus> findFlights(FindFlight findFlight){
-         return sqlSession.selectList("FlightStatusMapper.flights_search", findFlight);
+         return flightMapper.flightsSearch(findFlight);
     }
 
 
