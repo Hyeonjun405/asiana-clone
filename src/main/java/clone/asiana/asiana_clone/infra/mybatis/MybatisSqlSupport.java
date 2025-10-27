@@ -1,11 +1,11 @@
 package clone.asiana.asiana_clone.infra.mybatis;
 
 
+import lombok.extern.slf4j.Slf4j;
 import org.apache.ibatis.executor.Executor;
 import org.apache.ibatis.mapping.BoundSql;
 import org.apache.ibatis.mapping.MappedStatement;
 import org.apache.ibatis.mapping.ParameterMapping;
-import org.apache.ibatis.mapping.SqlCommandType;
 import org.apache.ibatis.plugin.Interceptor;
 import org.apache.ibatis.plugin.Intercepts;
 import org.apache.ibatis.plugin.Invocation;
@@ -23,12 +23,11 @@ import java.util.regex.Matcher;
         @Signature(type = Executor.class, method = "update", args = {MappedStatement.class, Object.class}),
         @Signature(type = Executor.class, method = "query",  args = {MappedStatement.class, Object.class, RowBounds.class, ResultHandler.class})
 })
-public class MybatisSupport implements Interceptor {
+@Slf4j
+public class MybatisSqlSupport implements Interceptor {
 
     @Override
     public Object intercept(Invocation invocation) throws Throwable {
-
-        System.out.println("인터셉터 시작");
 
         MappedStatement ms = (MappedStatement) invocation.getArgs()[0];
         Object parameterObject = invocation.getArgs().length > 1 ? invocation.getArgs()[1] : null;
@@ -52,8 +51,7 @@ public class MybatisSupport implements Interceptor {
             }
         }
 
-        System.out.println("실행 SQL: " + sql);
-        System.out.println("인터셉터 끝");
+        log.info("SQL : " + sql);
         return invocation.proceed();
     }
 
