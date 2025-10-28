@@ -1,15 +1,17 @@
 package clone.asiana.asiana_clone.flight.vo;
 
+import java.time.LocalDateTime;
+
 public class FlightStatusVO {
 
     private String flightNumber;
     private String departureAirport;
     private String arrivalAirport;
-    private String departureTime;
-    private String arrivalTime;
+    private LocalDateTime departureTime;
+    private LocalDateTime arrivalTime;
     private String status;
 
-    public FlightStatusVO(String flightNumber, String departureAirport, String arrivalAirport, String departureTime, String arrivalTime, String status) {
+    public FlightStatusVO(String flightNumber, String departureAirport, String arrivalAirport, LocalDateTime departureTime, LocalDateTime arrivalTime, String status) {
         this.flightNumber = flightNumber;
         this.departureAirport = departureAirport;
         this.arrivalAirport = arrivalAirport;
@@ -42,19 +44,19 @@ public class FlightStatusVO {
         this.arrivalAirport = arrivalAirport;
     }
 
-    public String getDepartureTime() {
+    public LocalDateTime getDepartureTime() {
         return departureTime;
     }
 
-    public void setDepartureTime(String departureTime) {
+    public void setDepartureTime(LocalDateTime departureTime) {
         this.departureTime = departureTime;
     }
 
-    public String getArrivalTime() {
+    public LocalDateTime getArrivalTime() {
         return arrivalTime;
     }
 
-    public void setArrivalTime(String arrivalTime) {
+    public void setArrivalTime(LocalDateTime arrivalTime) {
         this.arrivalTime = arrivalTime;
     }
 

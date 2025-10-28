@@ -35,6 +35,9 @@
         <if test="arrivalAirport != null and arrivalAirport != ''">
             and a.arrival_airport = #{arrivalAirport}
         </if>
+        <if test="departureTime != null and departureTime != ''">
+            and to_char(a.departure_time,'yyyy-MM-dd') = #{departureTime}
+        </if>
     </select>
 
 

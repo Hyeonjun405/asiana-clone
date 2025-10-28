@@ -1,13 +1,12 @@
 package clone.asiana.asiana_clone.flight.dto;
 
-import java.time.LocalDate;
 
 public class FlightRequestDTO {
 
 
     private String departureAirport;
     private String arrivalAirport;
-    private LocalDate departureDate;
+    private String departureDate;
 
     public String getDepartureAirport() {
         return departureAirport;
@@ -25,11 +24,11 @@ public class FlightRequestDTO {
         this.arrivalAirport = arrivalAirport;
     }
 
-    public LocalDate getDepartureDate() {
+    public String getDepartureDate() {
         return departureDate;
     }
 
-    public void setDepartureDate(LocalDate departureDate) {
+    public void setDepartureDate(String departureDate) {
         this.departureDate = departureDate;
     }
 }
