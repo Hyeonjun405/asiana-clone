@@ -18,7 +18,7 @@
         group by arrival_airport
     </select>
 
-    <select id="flightsSearch" resultType="clone.asiana.asiana_clone.flight.vo.FlightStatus">
+    <select id="flightsSearch" resultType="clone.asiana.asiana_clone.flight.vo.FlightStatusVO">
         select
             a.flight_number,
             a.departure_airport as departureAirport,

@@ -2,7 +2,7 @@ package clone.asiana.asiana_clone.flight.dto;
 
 import java.time.LocalDate;
 
-public class FlightRequestDto {
+public class FlightRequestDTO {
 
 
     private String departureAirport;

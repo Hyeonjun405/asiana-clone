@@ -1,9 +1,9 @@
 package clone.asiana.asiana_clone.flight.controller;
 
-import clone.asiana.asiana_clone.flight.dto.FlightRequestDto;
+import clone.asiana.asiana_clone.flight.dto.FlightRequestDTO;
 import clone.asiana.asiana_clone.flight.service.FlightService;
-import clone.asiana.asiana_clone.flight.vo.FindFlight;
-import clone.asiana.asiana_clone.flight.vo.FlightStatus;
+import clone.asiana.asiana_clone.flight.vo.FindFlightVO;
+import clone.asiana.asiana_clone.flight.vo.FlightStatusVO;
 import lombok.extern.slf4j.Slf4j;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,7 +22,7 @@ import java.util.List;
 @Slf4j
 @Controller
 @RequestMapping("/flight-search")
-public class FlightController {
+public class FlightViewController {
 
     @Autowired
     FlightService flightService;
@@ -38,11 +38,11 @@ public class FlightController {
     }
 
     @PostMapping("/search")
-    public String searchFlights(@ModelAttribute FlightRequestDto requestDto, Model model) {
+    public String searchFlights(@ModelAttribute FlightRequestDTO requestDto, Model model) {
 
-        FindFlight findFlight = new FindFlight(requestDto.getDepartureAirport(), requestDto.getArrivalAirport(), null);
+        FindFlightVO findFlightVO = new FindFlightVO(requestDto.getDepartureAirport(), requestDto.getArrivalAirport(), null);
 
-        List<FlightStatus> flights = flightService.findFlights(findFlight);
+        List<FlightStatusVO> flights = flightService.findFlights(findFlightVO);
 
         if(flights == null) flights = new ArrayList<>();
 

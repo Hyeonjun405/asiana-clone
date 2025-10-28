@@ -1,6 +1,6 @@
 package clone.asiana.asiana_clone.flight.vo;
 
-public class FlightStatus {
+public class FlightStatusVO {
 
     private String flightNumber;
     private String departureAirport;
@@ -9,7 +9,7 @@ public class FlightStatus {
     private String arrivalTime;
     private String status;
 
-    public FlightStatus(String flightNumber, String departureAirport, String arrivalAirport, String departureTime, String arrivalTime, String status) {
+    public FlightStatusVO(String flightNumber, String departureAirport, String arrivalAirport, String departureTime, String arrivalTime, String status) {
         this.flightNumber = flightNumber;
         this.departureAirport = departureAirport;
         this.arrivalAirport = arrivalAirport;
