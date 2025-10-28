@@ -2,16 +2,17 @@ package clone.asiana.asiana_clone.infra.mybatis;
 
 
 import lombok.extern.slf4j.Slf4j;
+import org.apache.ibatis.cache.Cache;
+import org.apache.ibatis.cache.CacheKey;
+
 import org.apache.ibatis.executor.Executor;
 import org.apache.ibatis.mapping.BoundSql;
 import org.apache.ibatis.mapping.MappedStatement;
-import org.apache.ibatis.mapping.ParameterMapping;
 import org.apache.ibatis.plugin.Interceptor;
 import org.apache.ibatis.plugin.Intercepts;
 import org.apache.ibatis.plugin.Invocation;
 import org.apache.ibatis.plugin.Signature;
-import org.apache.ibatis.reflection.MetaObject;
-import org.apache.ibatis.session.Configuration;
+
 import org.apache.ibatis.session.ResultHandler;
 import org.apache.ibatis.session.RowBounds;
 
@@ -30,28 +31,26 @@ public class MybatisSqlSupport implements Interceptor {
     public Object intercept(Invocation invocation) throws Throwable {
 
         MappedStatement ms = (MappedStatement) invocation.getArgs()[0];
-        Object parameterObject = invocation.getArgs().length > 1 ? invocation.getArgs()[1] : null;
+        Object parameter = invocation.getArgs().length > 1 ? invocation.getArgs()[1] : null;
+        ResultHandler<?> resultHandler = (ResultHandler<?>) invocation.getArgs()[3];
 
-        BoundSql boundSql = ms.getBoundSql(parameterObject);
-        String sql = boundSql.getSql().replaceAll("\\s+", " "); // 공백 정리
+        // 캐시 확인
+        Cache cache = ms.getCache();
 
-        // 실제 파라미터 값 바인딩
-        Configuration configuration = ms.getConfiguration();
-        List<ParameterMapping> paramMappings = boundSql.getParameterMappings();
-        if (paramMappings != null && !paramMappings.isEmpty()) {
-            MetaObject metaObject = configuration.newMetaObject(parameterObject);
+        // BoundSql 추출
+        BoundSql boundSql = ms.getBoundSql(parameter);
+        String sql = boundSql.getSql().replaceAll("\\s+", " ").trim();
 
-            for (ParameterMapping mapping : paramMappings) {
-                String propertyName = mapping.getProperty();
-                if (metaObject.hasGetter(propertyName)) {
-                    Object value = metaObject.getValue(propertyName);
-                    String valueStr = (value == null) ? "NULL" : "'" + value.toString() + "'";
-                    sql = sql.replaceFirst("\\?", Matcher.quoteReplacement(valueStr));
-                }
-            }
-        }
+        // ResultHandler가 null인 경우에만 로그 출력 (실제 쿼리 실행 타이밍)
+//        if (resultHandler == null) {
+//            log.info("========== MYBATIS SQL ==========");
+//            log.info("ID        : {}", ms.getId());
+//            log.info("SQL       : {}", sql);
+//            log.info("Parameter : {}", parameter);
+//            if (cache != null) log.debug("Cache ID  : {}", cache.getId());
+//            log.info("=================================");
+//        }
 
-        log.info("SQL : " + sql);
         return invocation.proceed();
     }
 
