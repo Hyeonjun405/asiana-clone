@@ -1,5 +1,6 @@
 package clone.asiana.asiana_clone.login.service;
 
+import clone.asiana.asiana_clone.login.vo.AccountUserVO;
 import clone.asiana.asiana_clone.login.vo.UserVO;
 import org.springframework.stereotype.Service;
 
@@ -24,11 +25,12 @@ public class LoginService {
     }
 
     // OTP 발송
-    public void sendOtp(){
+    public void sendOtp(String userNo){
+        //초기화 작업
 
     }
 
-    public boolean verifyOtp(){
+    public boolean verifyOtp(String otp, String userNo){
         return true;
     }
 
@@ -38,12 +40,12 @@ public class LoginService {
     }
 
     // 패스워드 찾기
-    public void findPassword(){
+    public void findPassword(String email){
 
     }
 
     // 계정 등록
-    public void registerAccount(){
+    public void registerAccount(AccountUserVO userVO){
 
     }
 }

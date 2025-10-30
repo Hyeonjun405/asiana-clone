@@ -1,16 +1,15 @@
 package clone.asiana.asiana_clone.login.controller;
 
+import clone.asiana.asiana_clone.login.dto.AccountUserDTO;
 import clone.asiana.asiana_clone.login.dto.userDTO;
 import clone.asiana.asiana_clone.login.service.LoginService;
+import clone.asiana.asiana_clone.login.vo.AccountUserVO;
 import clone.asiana.asiana_clone.login.vo.UserVO;
 import jakarta.servlet.http.HttpSession;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.*;
 
 @Controller
 @RequestMapping("/login")
@@ -34,15 +33,18 @@ public class LoginController {
         // ID/PWD 확인
         loginService.verifyCredentials(userVo);
 
+        //로그인 정보 저장
+        session.setAttribute("userNo", userVo.getUserNo());
+
         // 2차 검증 여부 확인후 분기처리
         switch(loginService.checkSecondVerification(userVo.getUserNo())){
             case "SKIP" :
-                //세션에 유저정보 저장
-                session.setAttribute("userNo", userVo.getUserNo());
+                //세션에 로그인 인증 정보 저장
+                session.setAttribute("isLoggedIn", true);
                 return "redirect:/";
             
             case "OTP" :
-                loginService.sendOtp();
+                loginService.sendOtp(userVo.getUserNo());
                 return "redirect:/login/otp";
 
             default : return "redirect:/login";
@@ -55,23 +57,25 @@ public class LoginController {
     }
 
     @PostMapping("/otp")
-    public String otpVerify() {
+    public String otpVerify(@RequestParam String otp, HttpSession session) {
 
-       if(!loginService.verifyOtp()){
-        
+       if(session.getAttribute("userNo") == null) return "redirect:/login";
+
+       if(!loginService.verifyOtp(otp, String.valueOf(session.getAttribute("userNo")))){
            //로그인 실패
            return "redirect:/login/otp";
        }
-          //세션에 유저정보 저장
+          //세션에 로그인 인증 정보 저장
+          session.setAttribute("isLoggedIn", true);
 
           //로그인 성공
           return "redirect:/";
     }
 
     @PostMapping("/otp/resend")
-    public String resendOtp() {
+    public String resendOtp(HttpSession session) {
         //otp 재발송
-        loginService.sendOtp();
+        loginService.sendOtp(String.valueOf(session.getAttribute("userNo")));
         return "redirect:/login/otp";
     }
 
@@ -81,9 +85,9 @@ public class LoginController {
     }
 
     @PostMapping("/findAccount")
-    public String findAccount() {
+    public String findAccount(@RequestParam String email) {
         //계정 찾기
-        loginService.findPassword();
+        loginService.findPassword(email);
         return "redirect:/login";
     }
 
@@ -93,9 +97,12 @@ public class LoginController {
     }
 
     @PostMapping("/createAccount")
-    public String createAccount() {
+    public String createAccount(AccountUserDTO userDTO) {
+
+        AccountUserVO accountUser = new AccountUserVO(userDTO.getEmail(), userDTO.getName(), userDTO.getPassword());
+
         //계정 등록
-        loginService.registerAccount();
+        loginService.registerAccount(accountUser);
         return "redirect:/login";
     }
 
