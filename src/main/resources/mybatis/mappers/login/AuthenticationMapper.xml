@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "//mybatis.org/DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="clone.asiana.asiana_clone.login.mapper.AuthenticationMapper">
+
+    <select id="isLocked" resultType="String">
+        select
+            account_status
+        from flights.users
+        where email = #{email}
+    </select>
+
+    <select id="verifyCredentials" resultType="Boolean">
+        select
+            count(*) > 0
+        from flights.users
+        where
+            email = #{email}
+            and password = #{password}
+    </select>
+
+    <update id="updateFailureCountByUserId">
+        update flights.users
+        set failed_attempts = failed_attempts+1
+        where email = #{email}
+    </update>
+
+</mapper>
