@@ -2,15 +2,15 @@ package clone.asiana.asiana_clone.login.dto;
 
 public class userDTO {
 
-    private String userNO;
+    private String email;
     private String password;
 
-    public String getUserNO() {
-        return userNO;
+    public String getEmail() {
+        return email;
     }
 
-    public void setUserNO(String userNO) {
-        this.userNO = userNO;
+    public void setEmail(String email) {
+        this.email = email;
     }
 
     public String getPassword() {

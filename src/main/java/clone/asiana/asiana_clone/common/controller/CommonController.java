@@ -27,8 +27,4 @@ public class CommonController {
         return "event";
     }
 
-    @GetMapping("/login")
-    public String login() {
-        return "login";
-    }
 }

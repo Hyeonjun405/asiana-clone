@@ -2,20 +2,21 @@ package clone.asiana.asiana_clone.login.vo;
 
 public class UserVO {
 
-    private String userNo;
+    private String email;
     private String password;
 
-    public UserVO(String userNo, String password) {
-        this.userNo = userNo;
+    public UserVO(String email, String password) {
+        this.email = email;
         this.password = password;
     }
 
-    public String getUserNo() {
-        return userNo;
+
+    public String getEmail() {
+        return email;
     }
 
-    public void setUserNo(String userNo) {
-        this.userNo = userNo;
+    public void setEmail(String email) {
+        this.email = email;
     }
 
     public String getPassword() {
