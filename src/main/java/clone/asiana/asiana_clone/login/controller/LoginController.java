@@ -1,8 +1,8 @@
 package clone.asiana.asiana_clone.login.controller;
 
 import clone.asiana.asiana_clone.login.dto.AccountUserDTO;
-import clone.asiana.asiana_clone.login.dto.userDTO;
-import clone.asiana.asiana_clone.login.exception.AuthenticationException;
+import clone.asiana.asiana_clone.login.dto.LoginResultDTO;
+import clone.asiana.asiana_clone.login.dto.UserDTO;
 import clone.asiana.asiana_clone.login.service.AccountService;
 import clone.asiana.asiana_clone.login.service.AuthenticationService;
 import clone.asiana.asiana_clone.login.service.OtpService;
@@ -13,6 +13,7 @@ import jakarta.servlet.http.HttpSession;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 @Controller
@@ -33,17 +34,25 @@ public class LoginController {
     public String loginPage(){return "login/login";}
 
     @PostMapping
-    public String login(@ModelAttribute userDTO userInfo, HttpSession session) {
+    public String login(@ModelAttribute UserDTO userInfo, HttpSession session, Model model) {
 
         UserVO userVo = new UserVO(userInfo.getEmail(), userInfo.getPassword());
 
         // 계정 상태 확인
-        authenticationService.checkAccountStatus(userVo);
-        log.info("계정 상태 확인 완료");
-        
+        log.info("계정 상태 확인");
+        LoginResultDTO result = authenticationService.checkAccountStatus(userVo);
+        if(!result.isSuccess()){
+            model.addAttribute("error", result.getMessage());
+            return "login/login";
+        }
+
         // ID/PWD 확인
-        authenticationService.verifyCredentials(userVo);
         log.info("계정 ID/PWD 일치 확인");
+        result = authenticationService.verifyCredentials(userVo);
+        if(!result.isSuccess()){
+            model.addAttribute("error", result.getMessage());
+            return "login/login";
+        }
 
         //로그인 정보 저장
         session.setAttribute("email", userVo.getEmail());
@@ -74,15 +83,17 @@ public class LoginController {
     }
 
     @PostMapping("/otp")
-    public String otpVerify(@RequestParam String otp, HttpSession session) {
+    public String otpVerify(@RequestParam String otp, HttpSession session, Model model) {
        log.info("OTP 번호검증");
 
-       if(session.getAttribute("email") == null) {
-           throw new AuthenticationException("시스템오류");
-       }
+       if(session.getAttribute("email") == null) return "redirect:/login";
 
        //OTP 번호검증
-       OtpService.verifyOtp(otp, (VerifyOtpVO) session.getAttribute("verifyOtpVO"));
+       LoginResultDTO result = OtpService.verifyOtp(otp, (VerifyOtpVO) session.getAttribute("verifyOtpVO"));
+        if(!result.isSuccess()){
+            model.addAttribute("error", result.getMessage());
+            return "redirect:/login/otp";
+        }
 
        session.setAttribute("isLoggedIn", true);
 
@@ -122,7 +133,7 @@ public class LoginController {
     @PostMapping("/createAccount")
     public String createAccount(AccountUserDTO userDTO) {
 
-        AccountUserVO accountUser = new AccountUserVO(userDTO.getEmail(), userDTO.getName(), userDTO.getPassword());
+        AccountUserVO accountUser = new AccountUserVO(userDTO.getEmail(), userDTO.getName(), userDTO.getPassword(), userDTO.getPhone());
 
         //계정 등록
         AccountService.registerAccount(accountUser);

@@ -1,6 +1,6 @@
 package clone.asiana.asiana_clone.login.service;
 
-import clone.asiana.asiana_clone.login.exception.OtpException;
+import clone.asiana.asiana_clone.login.dto.LoginResultDTO;
 import clone.asiana.asiana_clone.login.vo.VerifyOtpVO;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -29,16 +29,17 @@ public class OtpService {
         return otp;
     }
 
-    public void verifyOtp(String otp, VerifyOtpVO verifyOtp){
+    public LoginResultDTO verifyOtp(String otp, VerifyOtpVO verifyOtp){
 
         if (LocalDateTime.now().isAfter(verifyOtp.getExpireTime())) {
-            throw new OtpException("OTP시간 만료");
+            return new LoginResultDTO(LoginResultDTO.Status.OTP_TIME_OVER, "OTP 시간 초과");
         }
 
         if(!otp.equals(verifyOtp.getSysOtp())){
-            throw new OtpException("OTP 정보 다시 입력");
+            return new LoginResultDTO(LoginResultDTO.Status.WRONG_OTP, "OTP번호 오류");
         }
 
+        return new LoginResultDTO(LoginResultDTO.Status.SUCCESS, "성공");
     }
 
 

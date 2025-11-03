@@ -1,6 +1,6 @@
 package clone.asiana.asiana_clone.login.dto;
 
-public class userDTO {
+public class UserDTO {
 
     private String email;
     private String password;

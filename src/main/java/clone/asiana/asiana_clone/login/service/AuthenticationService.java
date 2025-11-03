@@ -1,6 +1,6 @@
 package clone.asiana.asiana_clone.login.service;
 
-import clone.asiana.asiana_clone.login.exception.AuthenticationException;
+import clone.asiana.asiana_clone.login.dto.LoginResultDTO;
 import clone.asiana.asiana_clone.login.mapper.AuthenticationMapper;
 import clone.asiana.asiana_clone.login.vo.UserVO;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,33 +14,31 @@ public class AuthenticationService {
 
 
     // 계정 상태 확인 (휴면/잠금/정상 등)
-    public void checkAccountStatus(UserVO user){
+    public LoginResultDTO checkAccountStatus(UserVO user){
 
         String userStatus = authenticationMapper.isLocked(user);
 
-        if(userStatus == null) throw new AuthenticationException("계정 정보 없음");
+        if(userStatus == null) return new LoginResultDTO(LoginResultDTO.Status.USER_NOT_FOUND, "정보없음");
 
+        LoginResultDTO.Status status;
         switch(userStatus){
-            case "ACTIVE": return; // 등록+ACTIVE 계정은 통과
-            case "LOCKED" : throw new AuthenticationException("계정 잠금 상태");
-            case "SUSPENDED": throw new AuthenticationException("계정 정지 상태");
-            default : throw new AuthenticationException("계정 정보 없음");
+            case "ACTIVE": return new LoginResultDTO(LoginResultDTO.Status.SUCCESS, "성공");
+            case "LOCKED" : return new LoginResultDTO(LoginResultDTO.Status.ACCOUNT_LOCKED, "계정 잠김");
+            case "SUSPENDED": return new LoginResultDTO(LoginResultDTO.Status.ACCOUNT_SUSPENDED, "계정 정지");
+            default : return new LoginResultDTO(LoginResultDTO.Status.USER_NOT_FOUND, "정보없음");
         }
-
     }
 
     // ID/PWD 확인
-    public void verifyCredentials(UserVO user){
+    public LoginResultDTO verifyCredentials(UserVO user){
 
-        // 계정이 있을 경우 true리턴
+        // 계정이 있을 경우 true리턴해서 if 통과함.
         if(!authenticationMapper.verifyCredentials(user)){
-
             authenticationMapper.updateFailureCountByUserId(user);
-
-            throw new AuthenticationException("ID 또는 패스워드 틀림");
+            return new LoginResultDTO(LoginResultDTO.Status.WRONG_ID_OR_WRONG_PASSWORD, "ID또는 패스워드틀림");
         }
 
-
+        return new LoginResultDTO(LoginResultDTO.Status.SUCCESS, "성공");
     }
 
     // SKIP / OTP
