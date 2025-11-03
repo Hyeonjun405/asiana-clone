@@ -5,11 +5,13 @@ public class AccountUserVO {
     private String email;
     private String name;
     private String password;
+    private String phone;
 
-    public AccountUserVO(String email, String name, String password) {
+    public AccountUserVO(String email, String name, String password, String phone) {
         this.email = email;
         this.name = name;
         this.password = password;
+        this.phone = phone;
     }
 
     public String getEmail() {
@@ -24,4 +26,5 @@ public class AccountUserVO {
         return password;
     }
 
+    public String getPhone() { return phone; }
 }
