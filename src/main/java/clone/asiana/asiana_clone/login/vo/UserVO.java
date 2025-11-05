@@ -10,6 +10,9 @@ public class UserVO {
         this.password = password;
     }
 
+    public UserVO(String email) {
+        this.email = email;
+    }
 
     public String getEmail() {
         return email;

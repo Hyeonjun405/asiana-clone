@@ -8,4 +8,11 @@
         values(#{name}, #{password}, #{email},#{phone})
     </insert>
 
+    <select id="findPW" resultType="clone.asiana.asiana_clone.login.dto.AccountUserDTO">
+        select
+            *
+        from flights.users
+        where email = #{email}
+    </select>
+
 </mapper>
