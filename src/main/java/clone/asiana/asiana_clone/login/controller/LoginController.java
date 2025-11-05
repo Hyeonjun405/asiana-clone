@@ -15,6 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 @Controller
 @RequestMapping("/login")
@@ -83,7 +84,7 @@ public class LoginController {
     }
 
     @PostMapping("/otp")
-    public String otpVerify(@RequestParam String otp, HttpSession session, Model model) {
+    public String otpVerify(@RequestParam String otp, HttpSession session, RedirectAttributes redirectAttributes) {
        log.info("OTP 번호검증");
 
        if(session.getAttribute("email") == null) return "redirect:/login";
@@ -91,7 +92,7 @@ public class LoginController {
        //OTP 번호검증
        LoginResultDTO result = OtpService.verifyOtp(otp, (VerifyOtpVO) session.getAttribute("verifyOtpVO"));
         if(!result.isSuccess()){
-            model.addAttribute("error", result.getMessage());
+            redirectAttributes.addAttribute("error", result.getMessage());
             return "redirect:/login/otp";
         }
 
@@ -118,9 +119,17 @@ public class LoginController {
     }
 
     @PostMapping("/findAccount")
-    public String findAccount(@RequestParam String email) {
+    public String findAccount(@ModelAttribute AccountUserDTO userInfo, RedirectAttributes redirectAttributes) {
+
+        UserVO userVO = new UserVO(userInfo.getEmail());
+
         //계정 비밀번호 찾기
-        AccountService.findPassword(email);
+        LoginResultDTO result = AccountService.findPassword(userVO);
+        if(!result.isSuccess()){
+            redirectAttributes.addFlashAttribute("error", result.getMessage());
+            return "redirect:/login";
+        }
+
         log.info("패스워드 찾음");
         return "redirect:/login";
     }
