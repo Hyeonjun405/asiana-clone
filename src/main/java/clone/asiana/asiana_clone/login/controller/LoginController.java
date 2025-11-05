@@ -57,6 +57,7 @@ public class LoginController {
 
         //로그인 정보 저장
         session.setAttribute("email", userVo.getEmail());
+        session.setAttribute("userName", result.getMessage());
         log.info("세션에 저장한 ID : " + userVo.getEmail());
 
         // 2차 검증 여부 확인후 분기처리
@@ -148,6 +149,13 @@ public class LoginController {
         AccountService.registerAccount(accountUser);
         log.info("계정생성");
         return "redirect:/login";
+    }
+
+    @GetMapping("/logout")
+    public String logout(HttpSession session) {
+
+        session.invalidate();
+        return "redirect:/";
     }
 
 }

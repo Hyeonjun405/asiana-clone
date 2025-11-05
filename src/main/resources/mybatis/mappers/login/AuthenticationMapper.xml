@@ -9,9 +9,9 @@
         where email = #{email}
     </select>
 
-    <select id="verifyCredentials" resultType="Boolean">
+    <select id="verifyCredentials" resultType="String">
         select
-            count(*) > 0
+            username
         from flights.users
         where
             email = #{email}

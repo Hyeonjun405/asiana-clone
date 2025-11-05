@@ -33,12 +33,13 @@ public class AuthenticationService {
     public LoginResultDTO verifyCredentials(UserVO user){
 
         // 계정이 있을 경우 true리턴해서 if 통과함.
-        if(!authenticationMapper.verifyCredentials(user)){
+        String name = authenticationMapper.verifyCredentials(user);
+        if(name == null){
             authenticationMapper.updateFailureCountByUserId(user);
             return new LoginResultDTO(LoginResultDTO.Status.WRONG_ID_OR_WRONG_PASSWORD, "ID또는 패스워드틀림");
         }
 
-        return new LoginResultDTO(LoginResultDTO.Status.SUCCESS, "성공");
+        return new LoginResultDTO(LoginResultDTO.Status.SUCCESS, name);
     }
 
     // SKIP / OTP

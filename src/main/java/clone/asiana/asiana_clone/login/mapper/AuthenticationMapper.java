@@ -9,7 +9,7 @@ import org.apache.ibatis.annotations.Mapper;
 public interface AuthenticationMapper {
 
     String isLocked(UserVO uservo);
-    Boolean verifyCredentials(UserVO uservo);
+    String verifyCredentials(UserVO uservo);
     void updateFailureCountByUserId(UserVO uservo);
 
 }
