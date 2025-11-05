@@ -80,7 +80,9 @@ public class LoginController {
     }
 
     @GetMapping("/otp")
-    public String otpLoginPage() {
+    public String otpLoginPage(@RequestParam(value = "error", required = false) String error,
+                               Model model) {
+        model.addAttribute("error", error);
         return "login/otp";
     }
 
@@ -92,6 +94,7 @@ public class LoginController {
 
        //OTP 번호검증
        LoginResultDTO result = OtpService.verifyOtp(otp, (VerifyOtpVO) session.getAttribute("verifyOtpVO"));
+
         if(!result.isSuccess()){
             redirectAttributes.addAttribute("error", result.getMessage());
             return "redirect:/login/otp";
@@ -107,6 +110,7 @@ public class LoginController {
 
     @PostMapping("/otp/resend")
     public String resendOtp(HttpSession session) {
+        log.info("왜지?");
         VerifyOtpVO verifyOtp = OtpService.sendOtp(String.valueOf(session.getAttribute("email")));
 
         session.setAttribute("verifyOtpVO", verifyOtp);
