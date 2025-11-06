@@ -12,14 +12,14 @@ public class CommonController {
         return "index";
     }
 
-    @GetMapping("/booking")
-    public String booking() {
-        return "booking";
+    @GetMapping("/inquiry")
+    public String reservationSearch() {
+        return "inquiry/inquiry-search";
     }
 
-    @GetMapping("/reservation")
-    public String reservation() {
-        return "reservation";
+    @GetMapping("/inquiry/detail")
+    public String reservationDetail() {
+        return "inquiry/inquiry-detail";
     }
 
     @GetMapping("/event")
