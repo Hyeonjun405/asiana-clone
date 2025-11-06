@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "//mybatis.org/DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="clone.asiana.asiana_clone.booking.mapper.BookingMapper">
+
+
+    <select id="searchFlights" resultType="clone.asiana.asiana_clone.booking.dto.BookingSearchResultDTO">
+        select
+            flight_number as flightNumber,
+            arrival_airport as arrivalAirport,
+            departure_airport as departureAirport,
+            departure_time as departureTime,
+            arrival_time as arrivalTime,
+            '100' as price
+        from flights.flights
+    </select>
+
+
+
+</mapper>
