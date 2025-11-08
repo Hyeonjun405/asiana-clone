@@ -80,9 +80,8 @@ public class LoginController {
     }
 
     @GetMapping("/otp")
-    public String otpLoginPage(@RequestParam(value = "error", required = false) String error,
-                               Model model) {
-        model.addAttribute("error", error);
+    public String otpLoginPage() {
+
         return "login/otp";
     }
 
@@ -93,10 +92,10 @@ public class LoginController {
        if(session.getAttribute("email") == null) return "redirect:/login";
 
        //OTP 번호검증
-       LoginResultDTO result = OtpService.verifyOtp(otp, (VerifyOtpVO) session.getAttribute("verifyOtpVO"));
+       LoginResultDTO result = OtpService.verifyOtp(otp, (VerifyOtpVO) session.getAttribute("verifyOtpVO"), String.valueOf(session.getAttribute("email")));
 
         if(!result.isSuccess()){
-            redirectAttributes.addAttribute("error", result.getMessage());
+            redirectAttributes.addFlashAttribute("error", result.getMessage());
             return "redirect:/login/otp";
         }
 
