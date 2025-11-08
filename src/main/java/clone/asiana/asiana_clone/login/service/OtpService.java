@@ -1,8 +1,11 @@
 package clone.asiana.asiana_clone.login.service;
 
 import clone.asiana.asiana_clone.login.dto.LoginResultDTO;
+import clone.asiana.asiana_clone.login.mapper.AuthenticationMapper;
+import clone.asiana.asiana_clone.login.vo.UserVO;
 import clone.asiana.asiana_clone.login.vo.VerifyOtpVO;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.security.SecureRandom;
@@ -12,7 +15,14 @@ import java.time.LocalDateTime;
 @Slf4j
 public class OtpService {
 
+    @Autowired
+    AuthenticationMapper authenticationMapper;
+
+    @Autowired
+    UserStatusService userStatus;
+
     private static final SecureRandom random = new SecureRandom();
+
 
     // OTP 발송
     public VerifyOtpVO sendOtp(String userNo){
@@ -29,13 +39,15 @@ public class OtpService {
         return otp;
     }
 
-    public LoginResultDTO verifyOtp(String otp, VerifyOtpVO verifyOtp){
+    public LoginResultDTO verifyOtp(String otp, VerifyOtpVO verifyOtp, String email){
 
         if (LocalDateTime.now().isAfter(verifyOtp.getExpireTime())) {
             return new LoginResultDTO(LoginResultDTO.Status.OTP_TIME_OVER, "OTP 시간 초과");
         }
 
         if(!otp.equals(verifyOtp.getSysOtp())){
+
+            userStatus.increaseFailCount(new UserVO(email));
             return new LoginResultDTO(LoginResultDTO.Status.WRONG_OTP, "OTP번호 오류");
         }
 

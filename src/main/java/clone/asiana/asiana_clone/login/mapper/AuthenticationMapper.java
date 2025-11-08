@@ -10,6 +10,6 @@ public interface AuthenticationMapper {
 
     String isLocked(UserVO uservo);
     String verifyCredentials(UserVO uservo);
-    void updateFailureCountByUserId(UserVO uservo);
+
 
 }

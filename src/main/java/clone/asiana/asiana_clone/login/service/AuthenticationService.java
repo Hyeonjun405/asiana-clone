@@ -3,14 +3,19 @@ package clone.asiana.asiana_clone.login.service;
 import clone.asiana.asiana_clone.login.dto.LoginResultDTO;
 import clone.asiana.asiana_clone.login.mapper.AuthenticationMapper;
 import clone.asiana.asiana_clone.login.vo.UserVO;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service
+@Slf4j
 public class AuthenticationService {
 
     @Autowired
     AuthenticationMapper authenticationMapper;
+
+    @Autowired
+    UserStatusService userStatus;
 
 
     // 계정 상태 확인 (휴면/잠금/정상 등)
@@ -35,7 +40,8 @@ public class AuthenticationService {
         // 계정이 있을 경우 true리턴해서 if 통과함.
         String name = authenticationMapper.verifyCredentials(user);
         if(name == null){
-            authenticationMapper.updateFailureCountByUserId(user);
+
+            userStatus.increaseFailCount(user);
             return new LoginResultDTO(LoginResultDTO.Status.WRONG_ID_OR_WRONG_PASSWORD, "ID또는 패스워드틀림");
         }
 
