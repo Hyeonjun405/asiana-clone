@@ -8,15 +8,12 @@ import org.apache.ibatis.mapping.MappedStatement;
 import org.apache.ibatis.mapping.ParameterMapping;
 import org.apache.ibatis.plugin.*;
 import org.apache.ibatis.reflection.MetaObject;
-import org.apache.ibatis.session.Configuration;
 import org.apache.ibatis.session.ResultHandler;
 import org.apache.ibatis.session.RowBounds;
 import org.apache.ibatis.type.TypeHandlerRegistry;
 
-import java.util.Date;
 import java.util.List;
 import java.util.Properties;
-import java.util.regex.Matcher;
 
 @Intercepts({
         @Signature(type = Executor.class,
@@ -33,19 +30,23 @@ public class MybatisSqlSupport implements Interceptor {
 
     @Override
     public Object intercept(Invocation invocation) throws Throwable {
-        MappedStatement ms = (MappedStatement) invocation.getArgs()[0];
-        Object parameter = null;
-        if (invocation.getArgs().length > 1) {
-            parameter = invocation.getArgs()[1];
+
+
+        Object[] args = invocation.getArgs();
+
+        // 1) MappedStatement 꺼냄
+        MappedStatement ms = (MappedStatement) args[0];
+
+        // 2) ParameterObject 꺼냄
+        Object parameterObject = null;
+        if (args.length > 1) {
+            parameterObject = args[1];
         }
 
-        BoundSql boundSql = ms.getBoundSql(parameter);
-        Configuration configuration = ms.getConfiguration();
+        // 3) 완성된 SQL 문자열 생성
+        String sql = getCompleteSql(ms, parameterObject);
 
-        // 실제 파라미터가 치환된 SQL 생성
-        String sql = getCompleteSql(boundSql, parameter, configuration);
-
-        // ThreadLocal 기반 중복 필터
+        // 4) 중복 로그 방지 (ThreadLocal 기반)
         String currentId = ms.getId();
         if (!currentId.equals(lastMapperId.get())) {
             System.out.println("실행 Mapper: " + currentId);
@@ -53,8 +54,12 @@ public class MybatisSqlSupport implements Interceptor {
             lastMapperId.set(currentId);
         }
 
+        // 5) 다음 체인 실행
         Object result = invocation.proceed();
+
+        // ThreadLocal 초기화
         lastMapperId.remove();
+
         return result;
     }
 
@@ -67,37 +72,38 @@ public class MybatisSqlSupport implements Interceptor {
     public void setProperties(Properties properties) {
     }
 
-    // BoundSql + Parameter 치환 함수
-    private String getCompleteSql(BoundSql boundSql, Object parameterObject, Configuration configuration) {
-        String sql = boundSql.getSql().replaceAll("\\s+", " ");
-        List<ParameterMapping> parameterMappings = boundSql.getParameterMappings();
+    public static String getCompleteSql(MappedStatement ms, Object parameterObject) {
+        BoundSql boundSql = ms.getBoundSql(parameterObject);
+        String sql = boundSql.getSql().replaceAll("\\s+", " ").trim(); // 보기 좋게 정리
 
-        if (parameterMappings != null) {
-            TypeHandlerRegistry typeHandlerRegistry = configuration.getTypeHandlerRegistry();
-            for (ParameterMapping mapping : parameterMappings) {
-                String propertyName = mapping.getProperty();
-                Object value;
+        List<ParameterMapping> paramMappings = boundSql.getParameterMappings();
+        TypeHandlerRegistry typeHandlerRegistry = ms.getConfiguration().getTypeHandlerRegistry();
 
-                if (boundSql.hasAdditionalParameter(propertyName)) { // 동적 파라미터
-                    value = boundSql.getAdditionalParameter(propertyName);
-                } else if (parameterObject == null) {
-                    value = null;
-                } else if (typeHandlerRegistry.hasTypeHandler(parameterObject.getClass())) {
-                    value = parameterObject;
-                } else {
-                    MetaObject metaObject = configuration.newMetaObject(parameterObject);
-                    value = metaObject.getValue(propertyName);
-                }
+        for (ParameterMapping paramMapping : paramMappings) {
+            String propertyName = paramMapping.getProperty();
 
-                sql = sql.replaceFirst("\\?", Matcher.quoteReplacement(formatParameter(value)));
+            Object value;
+
+            // 파라미터가 단일 값인지 DTO/Map인지 구분
+            if (boundSql.hasAdditionalParameter(propertyName)) {
+                value = boundSql.getAdditionalParameter(propertyName);
+            } else if (parameterObject == null) {
+                value = null;
+            } else if (typeHandlerRegistry.hasTypeHandler(parameterObject.getClass())) {
+                value = parameterObject;
+            } else {
+                MetaObject metaObject = ms.getConfiguration().newMetaObject(parameterObject);
+                value = metaObject.getValue(propertyName);
             }
+
+            // 값이 문자열이면 작은따옴표 처리
+            String valueStr = (value instanceof String) ? "'" + value + "'" : String.valueOf(value);
+
+            // 첫 번째 ? 만 치환
+            sql = sql.replaceFirst("\\?", valueStr);
         }
+
         return sql;
     }
 
-    private String formatParameter(Object obj) {
-        if (obj == null) return "NULL";
-        if (obj instanceof String || obj instanceof Date) return "'" + obj.toString() + "'";
-        return obj.toString();
-    }
 }
