@@ -63,3 +63,12 @@ CREATE TABLE flights.reservations (
         REFERENCES flights.users (user_id)
         ON DELETE CASCADE
 );
+
+-- flight_price (항공편당 금액)
+CREATE TABLE flights.flight_price (
+    flight_id BIGINT PRIMARY KEY REFERENCES flights.flights(flight_id),
+    first_price NUMERIC, -- 퍼스트
+    business_price NUMERIC, -- 비즈니스
+    economy_price NUMERIC NOT NULL, -- 이코노미 가격
+    option_price NUMERIC -- 옵션가격
+);
