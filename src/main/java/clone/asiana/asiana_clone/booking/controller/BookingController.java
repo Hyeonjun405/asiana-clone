@@ -7,11 +7,11 @@ import clone.asiana.asiana_clone.booking.vo.SearchFlightVO;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 @Controller
 @RequestMapping("/booking")
@@ -23,21 +23,21 @@ public class BookingController {
 
     @GetMapping
     public String booking() {
-        return "booking";
+        return "booking/booking";
     }
 
     @PostMapping
-    public String bookingSearch(@ModelAttribute BookingSearchDTO search, Model model){
+    public String bookingSearch(@ModelAttribute BookingSearchDTO search, RedirectAttributes redirectAttributes){
 
         SearchFlightVO outboundFlight = SearchFlightVO.fromOutbound(search);
-        model.addAttribute("outboundFlights", service.SearchFlights(outboundFlight));
+        redirectAttributes.addFlashAttribute("outboundFlights", service.SearchFlights(outboundFlight));
 
         if(search.getReturnDate() != null) {
             SearchFlightVO returnFlight = SearchFlightVO.fromReturn(search);
-            model.addAttribute("returnFlights", service.SearchFlights(returnFlight));
+            redirectAttributes.addFlashAttribute("returnFlights", service.SearchFlights(returnFlight));
         }
 
-        return "/booking";
+        return "redirect:/booking";
     }
 
 

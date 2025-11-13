@@ -12,6 +12,7 @@
             arrival_time as arrivalTime,
             '100' as price
         from flights.flights
+        limit 5
     </select>
 
 
