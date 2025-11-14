@@ -12,19 +12,10 @@ public class CommonController {
         return "index";
     }
 
-    @GetMapping("/inquiry")
-    public String reservationSearch() {
-        return "inquiry/inquiry-search";
-    }
-
-    @GetMapping("/inquiry/detail")
-    public String reservationDetail() {
-        return "inquiry/inquiry-detail";
-    }
-
     @GetMapping("/event")
     public String event() {
         return "event";
     }
+
 
 }
