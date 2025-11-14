@@ -10,17 +10,27 @@
         let selectedSecond = null;
 
         function toggleTripType(type) {
-            document.getElementById("tripType").value = type;
-            const secondJourneyGroup = document.getElementById("secondJourneyGroup");
+            document.getElementById('tripType').value = type;
+
+            const roundBtn = document.getElementById('roundTab');
+            const oneBtn = document.getElementById('onewayTab');
+
             if (type === 'ROUND') {
-                secondJourneyGroup.style.display = 'block';
-                document.getElementById("roundTab").classList.add("active");
-                document.getElementById("onewayTab").classList.remove("active");
+                roundBtn.classList.add('btn-primary');
+                roundBtn.classList.remove('btn-outline-primary');
+
+                oneBtn.classList.add('btn-outline-primary');
+                oneBtn.classList.remove('btn-primary');
+
+                document.getElementById('returnSection').style.display = 'block';
             } else {
-                secondJourneyGroup.style.display = 'none';
-                document.getElementById("roundTab").classList.remove("active");
-                document.getElementById("onewayTab").classList.add("active");
-                selectedSecond = null; // 편도면 두 번째 여정 초기화
+                oneBtn.classList.add('btn-primary');
+                oneBtn.classList.remove('btn-outline-primary');
+
+                roundBtn.classList.add('btn-outline-primary');
+                roundBtn.classList.remove('btn-primary');
+
+                document.getElementById('returnSection').style.display = 'none';
             }
         }
 
@@ -76,7 +86,13 @@
             document.body.appendChild(form);
             form.submit();
         }
+
+        // 초기 로딩 시 왕복이 기본 선택되도록
+        window.onload = () => {
+            toggleTripType('ROUND');
+        };
     </script>
+
 </head>
 <body>
 <div th:replace="~{fragments/header :: header}"></div>
@@ -87,8 +103,14 @@
     <!-- 왕복/편도 탭 -->
     <div class="d-flex justify-content-center mb-4">
         <div class="btn-group" role="group">
-            <button id="roundTab" type="button" class="btn btn-outline-primary active" onclick="toggleTripType('ROUND')">왕복</button>
-            <button id="onewayTab" type="button" class="btn btn-outline-primary" onclick="toggleTripType('ONEWAY')">편도</button>
+            <button id="roundTab" type="button"
+                    class="btn btn-outline-primary"
+                    th:classappend="${tripType == 'ROUND'} ? ' active' : ''"
+                    onclick="toggleTripType('ROUND')">왕복</button>
+            <button id="onewayTab" type="button"
+                    class="btn btn-outline-primary"
+                    th:classappend="${tripType == 'ONEWAY'} ? ' active' : ''"
+                    onclick="toggleTripType('ONEWAY')">편도</button>
         </div>
     </div>
 
@@ -99,37 +121,44 @@
         <div class="row mb-3">
             <div class="col-md-6">
                 <label class="form-label">출발지</label>
-                <input type="text" name="departureAirport" class="form-control" placeholder="예: 서울" th:value="${departureAirport}">
+                <input type="text" name="departureAirport" class="form-control" placeholder="예: 서울"
+                       th:value="${request != null ? request.departureAirport : ''}">
             </div>
             <div class="col-md-6">
                 <label class="form-label">도착지</label>
-                <input type="text" name="arrivalAirport" class="form-control" placeholder="예: 도쿄" th:value="${arrivalAirport}">
+                <input type="text" name="arrivalAirport" class="form-control" placeholder="예: 도쿄"
+                       th:value="${request != null ? request.arrivalAirport : ''}">
             </div>
         </div>
 
         <div class="row mb-3">
             <div class="col-md-6">
                 <label class="form-label">첫 번째 여정</label>
-                <input type="date" name="departureDate" class="form-control" th:value="${departureDate}">
+                <input type="date" name="departureDate" class="form-control"
+                       th:value="${request != null ? request.departureDate : ''}">
             </div>
             <div class="col-md-6" id="secondJourneyGroup">
                 <label class="form-label">두 번째 여정</label>
-                <input type="date" name="returnDate" class="form-control" th:value="${returnDate}">
+                <input type="date" name="returnDate" class="form-control"
+                       th:value="${request != null ? request.returnDate : ''}">
             </div>
         </div>
 
         <div class="row mb-3">
             <div class="col-md-4">
                 <label class="form-label">성인</label>
-                <input type="number" name="adult" class="form-control" min="0" th:value="${adult != null ? adult : 1}">
+                <input type="number" name="adult" class="form-control" min="0"
+                       th:value="${request != null ? request.adult : 1}">
             </div>
             <div class="col-md-4">
                 <label class="form-label">소아</label>
-                <input type="number" name="child" class="form-control" min="0" th:value="${child != null ? child : 0}">
+                <input type="number" name="child" class="form-control" min="0"
+                       th:value="${request != null ? request.child : 0}">
             </div>
             <div class="col-md-4">
                 <label class="form-label">유아</label>
-                <input type="number" name="infant" class="form-control" min="0" th:value="${infant != null ? infant : 0}">
+                <input type="number" name="infant" class="form-control" min="0"
+                       th:value="${request != null ? request.infant : 0}">
             </div>
         </div>
 
