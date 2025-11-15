@@ -14,6 +14,7 @@
 
             const roundBtn = document.getElementById('roundTab');
             const oneBtn = document.getElementById('onewayTab');
+            const secondJourneyGroup = document.getElementById('secondJourneyGroup');
 
             if (type === 'ROUND') {
                 roundBtn.classList.add('btn-primary');
@@ -22,7 +23,7 @@
                 oneBtn.classList.add('btn-outline-primary');
                 oneBtn.classList.remove('btn-primary');
 
-                document.getElementById('returnSection').style.display = 'block';
+                secondJourneyGroup.style.display = 'block';
             } else {
                 oneBtn.classList.add('btn-primary');
                 oneBtn.classList.remove('btn-outline-primary');
@@ -30,7 +31,8 @@
                 roundBtn.classList.add('btn-outline-primary');
                 roundBtn.classList.remove('btn-primary');
 
-                document.getElementById('returnSection').style.display = 'none';
+                secondJourneyGroup.style.display = 'none';
+                selectedSecond = null;
             }
         }
 
@@ -87,12 +89,11 @@
             form.submit();
         }
 
-        // 초기 로딩 시 왕복이 기본 선택되도록
         window.onload = () => {
-            toggleTripType('ROUND');
+            const tripType = document.getElementById('tripType').value || 'ROUND';
+            toggleTripType(tripType);
         };
     </script>
-
 </head>
 <body>
 <div th:replace="~{fragments/header :: header}"></div>
@@ -105,29 +106,27 @@
         <div class="btn-group" role="group">
             <button id="roundTab" type="button"
                     class="btn btn-outline-primary"
-                    th:classappend="${tripType == 'ROUND'} ? ' active' : ''"
                     onclick="toggleTripType('ROUND')">왕복</button>
             <button id="onewayTab" type="button"
                     class="btn btn-outline-primary"
-                    th:classappend="${tripType == 'ONEWAY'} ? ' active' : ''"
                     onclick="toggleTripType('ONEWAY')">편도</button>
         </div>
     </div>
 
     <!-- 예약 폼 -->
     <form class="border p-4 rounded shadow-sm col-md-8 mx-auto" th:action="@{/booking}" method="post">
-        <input type="hidden" name="tripType" id="tripType" value="ROUND">
+        <input type="hidden" name="tripType" id="tripType" th:value="${search != null ? search.tripType : 'ROUND'}">
 
         <div class="row mb-3">
             <div class="col-md-6">
                 <label class="form-label">출발지</label>
                 <input type="text" name="departureAirport" class="form-control" placeholder="예: 서울"
-                       th:value="${request != null ? request.departureAirport : ''}">
+                       th:value="${search != null ? search.departureAirport : ''}">
             </div>
             <div class="col-md-6">
                 <label class="form-label">도착지</label>
                 <input type="text" name="arrivalAirport" class="form-control" placeholder="예: 도쿄"
-                       th:value="${request != null ? request.arrivalAirport : ''}">
+                       th:value="${search != null ? search.arrivalAirport : ''}">
             </div>
         </div>
 
@@ -135,12 +134,12 @@
             <div class="col-md-6">
                 <label class="form-label">첫 번째 여정</label>
                 <input type="date" name="departureDate" class="form-control"
-                       th:value="${request != null ? request.departureDate : ''}">
+                       th:value="${search != null ? search.departureDate : ''}">
             </div>
             <div class="col-md-6" id="secondJourneyGroup">
                 <label class="form-label">두 번째 여정</label>
                 <input type="date" name="returnDate" class="form-control"
-                       th:value="${request != null ? request.returnDate : ''}">
+                       th:value="${search != null ? search.returnDate : ''}">
             </div>
         </div>
 
@@ -148,17 +147,17 @@
             <div class="col-md-4">
                 <label class="form-label">성인</label>
                 <input type="number" name="adult" class="form-control" min="0"
-                       th:value="${request != null ? request.adult : 1}">
+                       th:value="${search != null ? search.adult : 1}">
             </div>
             <div class="col-md-4">
                 <label class="form-label">소아</label>
                 <input type="number" name="child" class="form-control" min="0"
-                       th:value="${request != null ? request.child : 0}">
+                       th:value="${search != null ? search.child : 0}">
             </div>
             <div class="col-md-4">
                 <label class="form-label">유아</label>
                 <input type="number" name="infant" class="form-control" min="0"
-                       th:value="${request != null ? request.infant : 0}">
+                       th:value="${search != null ? search.infant : 0}">
             </div>
         </div>
 
@@ -167,28 +166,28 @@
             <div class="col-md-3">
                 <div class="form-check">
                     <input class="form-check-input" type="checkbox" id="seatEconomyDiscount" name="seatClass" value="ECONOMY_DISCOUNT"
-                           th:checked="${seatClassList != null and seatClassList.contains('ECONOMY_DISCOUNT')}">
+                           th:checked="${search != null and search.seatClass != null and #lists.contains(search.seatClass, 'ECONOMY_DISCOUNT')}">
                     <label class="form-check-label" for="seatEconomyDiscount">이코노미 특가</label>
                 </div>
             </div>
             <div class="col-md-3">
                 <div class="form-check">
                     <input class="form-check-input" type="checkbox" id="seatEconomy" name="seatClass" value="ECONOMY"
-                           th:checked="${seatClassList != null and seatClassList.contains('ECONOMY')}">
+                           th:checked="${search != null and search.seatClass != null and #lists.contains(search.seatClass, 'ECONOMY')}">
                     <label class="form-check-label" for="seatEconomy">이코노미</label>
                 </div>
             </div>
             <div class="col-md-3">
                 <div class="form-check">
                     <input class="form-check-input" type="checkbox" id="seatBusiness" name="seatClass" value="BUSINESS"
-                           th:checked="${seatClassList != null and seatClassList.contains('BUSINESS')}">
+                           th:checked="${search != null and search.seatClass != null and #lists.contains(search.seatClass, 'BUSINESS')}">
                     <label class="form-check-label" for="seatBusiness">비즈니스</label>
                 </div>
             </div>
             <div class="col-md-3">
                 <div class="form-check">
                     <input class="form-check-input" type="checkbox" id="seatFirst" name="seatClass" value="FIRST"
-                           th:checked="${seatClassList != null and seatClassList.contains('FIRST')}">
+                           th:checked="${search != null and search.seatClass != null and #lists.contains(search.seatClass, 'FIRST')}">
                     <label class="form-check-label" for="seatFirst">퍼스트</label>
                 </div>
             </div>
@@ -286,6 +285,7 @@
             <button type="button" class="btn btn-success px-5" onclick="goToPayment()">결제하기</button>
         </div>
     </div>
+
 </section>
 
 <div th:replace="~{fragments/footer :: footer}"></div>

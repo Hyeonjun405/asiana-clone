@@ -31,15 +31,12 @@ public class BookingController {
     @PostMapping
     public String bookingSearch(@ModelAttribute BookingSearchDTO search, RedirectAttributes redirectAttributes){
 
-        SearchFlightVO outboundFlight = SearchFlightVO.fromOutbound(search);
-//        redirectAttributes.addFlashAttribute("request", search);
-        redirectAttributes.addFlashAttribute("outboundFlights", service.SearchFlights(outboundFlight));
-        redirectAttributes.addFlashAttribute("tripType", "ONEWAY");
+        redirectAttributes.addFlashAttribute("search", search);
 
-        if(search.getReturnDate() != null) {
-            SearchFlightVO returnFlight = SearchFlightVO.fromReturn(search);
-            redirectAttributes.addFlashAttribute("returnFlights", service.SearchFlights(returnFlight));
-            redirectAttributes.addFlashAttribute("tripType", "round");
+        redirectAttributes.addFlashAttribute("outboundFlights", service.SearchFlights(SearchFlightVO.fromOutbound(search)));
+
+        if(search.getTripType().equals("ROUND")) {
+            redirectAttributes.addFlashAttribute("returnFlights", service.SearchFlights(SearchFlightVO.fromReturn(search)));
         }
 
         return "redirect:/booking";
@@ -52,8 +49,6 @@ public class BookingController {
 
     @PostMapping("/payment")
     public String payment(@ModelAttribute BookingRequestDTO param){
-
-        log.info("값 : " + param.toString());
 
         return "redirect:/booking/payment";
     }

@@ -1,8 +1,11 @@
 package clone.asiana.asiana_clone.booking.dto;
 
 import java.time.LocalDate;
+import java.util.List;
 
 public class BookingSearchDTO {
+
+    private String tripType;
 
     String departureAirport;
     String arrivalAirport;
@@ -13,8 +16,15 @@ public class BookingSearchDTO {
     int child;
     int infant;
 
-    String seatClass;
+    private List<String> seatClass;
 
+    public String getTripType() {
+        return tripType;
+    }
+
+    public void setTripType(String tripType) {
+        this.tripType = tripType;
+    }
 
     public String getDepartureAirport() {
         return departureAirport;
@@ -72,11 +82,11 @@ public class BookingSearchDTO {
         this.infant = infant;
     }
 
-    public String getSeatClass() {
+    public List<String> getSeatClass() {
         return seatClass;
     }
 
-    public void setSeatClass(String seatClass) {
+    public void setSeatClass(List<String> seatClass) {
         this.seatClass = seatClass;
     }
 
