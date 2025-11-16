@@ -4,12 +4,12 @@ import java.time.LocalDateTime;
 
 public class FlightStatusVO {
 
-    private String flightNumber;
-    private String departureAirport;
-    private String arrivalAirport;
-    private LocalDateTime departureTime;
-    private LocalDateTime arrivalTime;
-    private String status;
+    private String flightNumber; // 항공편명 
+    private String departureAirport; // 출발공항
+    private String arrivalAirport; // 도착공항
+    private LocalDateTime departureTime; // 출발시간
+    private LocalDateTime arrivalTime; // 도착시간
+    private String status; // 상태
 
     public FlightStatusVO(String flightNumber, String departureAirport, String arrivalAirport, LocalDateTime departureTime, LocalDateTime arrivalTime, String status) {
         this.flightNumber = flightNumber;

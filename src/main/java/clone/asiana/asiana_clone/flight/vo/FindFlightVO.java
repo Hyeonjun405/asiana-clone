@@ -2,9 +2,9 @@ package clone.asiana.asiana_clone.flight.vo;
 
 public class FindFlightVO {
 
-    private String departureAirport;
-    private String arrivalAirport;
-    private String departureTime;
+    private String departureAirport; // 출발 공항
+    private String arrivalAirport; // 도착 공항
+    private String departureTime; // 출발시간
 
     public FindFlightVO(String departureAirport, String arrivalAirport, String departureTime) {
         this.departureAirport = departureAirport;

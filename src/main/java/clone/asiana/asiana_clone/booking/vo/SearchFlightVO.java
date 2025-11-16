@@ -7,7 +7,7 @@ import java.time.LocalDate;
 public class SearchFlightVO {
 
 
-    String departureAirport;
+    String departureAirport; // 출발
     String arrivalAirport;
     LocalDate searchDate;
 
