@@ -1,20 +1,23 @@
 package clone.asiana.asiana_clone.booking.dto;
 
+import clone.asiana.asiana_clone.booking.vo.PassengerInfoVO;
+import clone.asiana.asiana_clone.booking.vo.SearchFlightVO;
+
 import java.time.LocalDate;
 import java.util.List;
 
 public class BookingSearchDTO {
 
-    private String tripType;
+    private String tripType; //여행타입
 
-    String departureAirport;
-    String arrivalAirport;
-    LocalDate departureDate;
-    LocalDate returnDate;
+    String departureAirport; // 출발공항
+    String arrivalAirport; // 도착공항
+    LocalDate departureDate; // 출발시간
+    LocalDate returnDate; // 도착시간
 
-    int adult;
-    int child;
-    int infant;
+    int adult; //성인
+    int child; //아동
+    int infant; //유아
 
     private List<String> seatClass;
 
@@ -90,17 +93,36 @@ public class BookingSearchDTO {
         this.seatClass = seatClass;
     }
 
-    @Override
-    public String toString() {
-        return "BookingSearchDTO{" +
-                "departureAirport='" + departureAirport + '\'' +
-                ", arrivalAirport='" + arrivalAirport + '\'' +
-                ", departureDate=" + departureDate +
-                ", returnDate=" + returnDate +
-                ", adult=" + adult +
-                ", child=" + child +
-                ", infant=" + infant +
-                ", seatClass='" + seatClass + '\'' +
-                '}';
+    public SearchFlightVO toFirstFlightVO(){
+
+        SearchFlightVO returnVO = new SearchFlightVO();
+        returnVO.setDepartureAirport(this.departureAirport); //출발
+        returnVO.setArrivalAirport(this.arrivalAirport); //도착
+        returnVO.setDepartureDate(this.departureDate);
+        returnVO.setTotalPassengers(this.adult + this.child + this.infant);
+        return returnVO;
     }
+
+    public SearchFlightVO toSecondFlightVO(){
+
+        SearchFlightVO returnVO = new SearchFlightVO();
+        returnVO.setDepartureAirport(this.arrivalAirport); //출발
+        returnVO.setArrivalAirport(this.departureAirport); //도착
+        returnVO.setDepartureDate(this.returnDate);
+        returnVO.setTotalPassengers(this.adult + this.child + this.infant);
+        return returnVO;
+    }
+
+    public PassengerInfoVO toPassengerInfoVO(){
+
+        PassengerInfoVO returnVO = new PassengerInfoVO();
+        returnVO.setAdult(this.adult);
+        returnVO.setChild(this.child);
+        returnVO.setInfant(this.infant);
+
+        return returnVO;
+
+    }
+
+
 }

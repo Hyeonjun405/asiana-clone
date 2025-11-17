@@ -4,12 +4,12 @@ import java.sql.Timestamp;
 
 public class BookingSearchResultDTO {
 
-    String flightNumber;
-    String departureAirport;
-    String arrivalAirport;
-    Timestamp departureTime;
-    Timestamp arrivalTime;
-    int price;
+    String flightNumber; //항공편명
+    String departureAirport; //출발공항
+    String arrivalAirport; // 도착공항
+    Timestamp departureTime; // 출발시간
+    Timestamp arrivalTime; //도착시간
+    int price; // 가격합계
 
     public String getFlightNumber() {
         return flightNumber;
