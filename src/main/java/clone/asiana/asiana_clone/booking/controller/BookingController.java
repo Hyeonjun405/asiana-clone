@@ -3,8 +3,7 @@ package clone.asiana.asiana_clone.booking.controller;
 
 import clone.asiana.asiana_clone.booking.dto.BookingRequestDTO;
 import clone.asiana.asiana_clone.booking.dto.BookingSearchDTO;
-import clone.asiana.asiana_clone.booking.service.BookingService;
-import clone.asiana.asiana_clone.booking.vo.SearchFlightVO;
+import clone.asiana.asiana_clone.booking.service.BookingFacadeService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -21,7 +20,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 public class BookingController {
 
     @Autowired
-    BookingService service;
+    BookingFacadeService service;
 
     @GetMapping
     public String booking(Model model) {
@@ -33,10 +32,11 @@ public class BookingController {
 
         redirectAttributes.addFlashAttribute("search", search);
 
-        redirectAttributes.addFlashAttribute("outboundFlights", service.SearchFlights(SearchFlightVO.fromOutbound(search)));
+        //search의 TripType를 가지고 ROUND랑 기본형 분류.
+        redirectAttributes.addFlashAttribute("outboundFlights", service.searchFlights(search.toFirstFlightVO(), search.toPassengerInfoVO()));
 
         if(search.getTripType().equals("ROUND")) {
-            redirectAttributes.addFlashAttribute("returnFlights", service.SearchFlights(SearchFlightVO.fromReturn(search)));
+            redirectAttributes.addFlashAttribute("returnFlights", service.searchFlights(search.toSecondFlightVO(), search.toPassengerInfoVO()));
         }
 
         return "redirect:/booking";
